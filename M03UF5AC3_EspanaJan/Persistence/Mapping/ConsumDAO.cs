@@ -44,8 +44,12 @@ namespace M03UF5AC3_EspanaJan.Persistence.Mapping
                 cmd.Parameters.AddWithValue("@ActivitatsEconomiquesIFontsPropies", consum.ActivitatsEconomiquesIFontsPropies);
                 cmd.Parameters.AddWithValue("@Total", consum.Total);
                 cmd.Parameters.AddWithValue("@ConsumDomesticPerCapita", consum.ConsumDomesticPerCapita);
-                conn.Open();
-                cmd.ExecuteNonQuery();
+                //only insert if the consum does not exist
+                if (GetAllConsum().Find(c => c.Any == consum.Any && c.CodiComarca == consum.CodiComarca) == null)
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
     }

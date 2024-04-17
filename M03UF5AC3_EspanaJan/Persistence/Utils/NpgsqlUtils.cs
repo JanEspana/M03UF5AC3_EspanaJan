@@ -9,7 +9,7 @@ namespace M03UF5AC3_EspanaJan.Persistence.Utils
         public static string OpenConnection()
         {
             //ruta absoluta
-            string path;
+            string path = "C:\\Users\\argo\\source\\repos\\M03UF5AC3_EspanaJan\\M03UF5AC3_EspanaJan\\appsettings.json";
             IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile(path, optional: false, reloadOnChange: true)
                 .Build();
