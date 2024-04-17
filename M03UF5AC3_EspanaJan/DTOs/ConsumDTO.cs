@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace M03UF5AC3_EspanaJan
+namespace M03UF5AC3_EspanaJan.DTOs
 {
-    public class Consum
+    public class ConsumDTO
     {
         public int Any { get; set; }
         public int CodiComarca { get; set; }
@@ -17,6 +17,6 @@ namespace M03UF5AC3_EspanaJan
         public double Total { get; set; }
         public double ConsumDomesticPerCapita { get; set; }
 
-        public Consum() { }
+        public ConsumDTO() { }
     }
 }

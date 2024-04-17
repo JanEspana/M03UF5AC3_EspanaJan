@@ -1,5 +1,9 @@
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using M03UF5AC3_EspanaJan.Persistence.Utils;
+using M03UF5AC3_EspanaJan.Persistence.Mapping;
+using M03UF5AC3_EspanaJan.Persistence.DAO;
+using M03UF5AC3_EspanaJan.DTOs;
 
 namespace M03UF5AC3_EspanaJan
 {
@@ -88,7 +92,7 @@ namespace M03UF5AC3_EspanaJan
                 errorTotal.Clear();
                 errorXarxa.Clear();
 
-                Consum consum = new Consum();
+                ConsumDTO consum = new ConsumDTO();
                 consum.Any = int.Parse(year.Text);
                 consum.CodiComarca = comarca.SelectedIndex;
                 consum.Comarca = comarca.Text;
@@ -104,66 +108,88 @@ namespace M03UF5AC3_EspanaJan
 
         private void grid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (grid.Rows[e.RowIndex].Cells["Poblacio"].Value != null)
+            //if cell is not header
+            if (e.RowIndex != -1)
             {
-                if (int.Parse(grid.Rows[e.RowIndex].Cells["Poblacio"].Value.ToString()) > 20000)
+                if (grid.Rows[e.RowIndex].Cells["Poblacio"].Value != null)
                 {
-                    morethan20000.Text = "True";
+                    if (int.Parse(grid.Rows[e.RowIndex].Cells["Poblacio"].Value.ToString()) > 20000)
+                    {
+                        morethan20000.Text = "True";
+                    }
+                    else
+                    {
+                        morethan20000.Text = "False";
+                    }
+                }
+                double sum = 0;
+                int rowCount = 0;
+                for (int i = 0; i < grid.Rows.Count; i++)
+                {
+                    if (grid.Rows[i].Cells["Comarca"].Value.ToString() == grid.Rows[e.RowIndex].Cells["Comarca"].Value.ToString())
+                    {
+                        sum += double.Parse(grid.Rows[i].Cells["ConsumDomesticPerCapita"].Value.ToString());
+                        rowCount++;
+                    }
+                }
+                avgConsum.Text = Math.Round((sum / rowCount), 2).ToString();
+                double highest = 0;
+                for (int i = 0; i < grid.Rows.Count; i++)
+                {
+                    if (grid.Rows[i].Cells["Comarca"].Value.ToString() == grid.Rows[e.RowIndex].Cells["Comarca"].Value.ToString())
+                    {
+                        if (double.Parse(grid.Rows[i].Cells["ConsumDomesticPerCapita"].Value.ToString()) > highest)
+                        {
+                            highest = double.Parse(grid.Rows[i].Cells["ConsumDomesticPerCapita"].Value.ToString());
+                        }
+                    }
+                }
+                if (double.Parse(grid.Rows[e.RowIndex].Cells["ConsumDomesticPerCapita"].Value.ToString()) == highest)
+                {
+                    higherCons.Text = "True";
                 }
                 else
                 {
-                    morethan20000.Text = "False";
+                    higherCons.Text = "False";
                 }
-            }
-            double sum = 0;
-            int rowCount = 0;
-            for (int i = 0; i < grid.Rows.Count; i++)
-            {
-                if (grid.Rows[i].Cells["Comarca"].Value.ToString() == grid.Rows[e.RowIndex].Cells["Comarca"].Value.ToString())
+                double lowest = 1000000;
+                for (int i = 0; i < grid.Rows.Count; i++)
                 {
-                    sum += double.Parse(grid.Rows[i].Cells["ConsumDomesticPerCapita"].Value.ToString());
-                    rowCount++;
-                }
-            }
-            avgConsum.Text = Math.Round((sum / rowCount), 2).ToString();
-            double highest = 0;
-            for (int i = 0; i < grid.Rows.Count; i++)
-            {
-                if (grid.Rows[i].Cells["Comarca"].Value.ToString() == grid.Rows[e.RowIndex].Cells["Comarca"].Value.ToString())
-                {
-                    if (double.Parse(grid.Rows[i].Cells["ConsumDomesticPerCapita"].Value.ToString()) > highest)
+                    if (grid.Rows[i].Cells["Comarca"].Value.ToString() == grid.Rows[e.RowIndex].Cells["Comarca"].Value.ToString())
                     {
-                        highest = double.Parse(grid.Rows[i].Cells["ConsumDomesticPerCapita"].Value.ToString());
+                        if (double.Parse(grid.Rows[i].Cells["ConsumDomesticPerCapita"].Value.ToString()) < lowest)
+                        {
+                            lowest = double.Parse(grid.Rows[i].Cells["ConsumDomesticPerCapita"].Value.ToString());
+                        }
                     }
                 }
-            }
-            if (double.Parse(grid.Rows[e.RowIndex].Cells["ConsumDomesticPerCapita"].Value.ToString()) == highest)
-            {
-                higherCons.Text = "True";
-            }
-            else
-            {
-                higherCons.Text = "False";
-            }
-            double lowest = 1000000;
-            for (int i = 0; i < grid.Rows.Count; i++)
-            {
-                if (grid.Rows[i].Cells["Comarca"].Value.ToString() == grid.Rows[e.RowIndex].Cells["Comarca"].Value.ToString())
+                if (double.Parse(grid.Rows[e.RowIndex].Cells["ConsumDomesticPerCapita"].Value.ToString()) == lowest)
                 {
-                    if (double.Parse(grid.Rows[i].Cells["ConsumDomesticPerCapita"].Value.ToString()) < lowest)
-                    {
-                        lowest = double.Parse(grid.Rows[i].Cells["ConsumDomesticPerCapita"].Value.ToString());
-                    }
+                    lowerCons.Text = "True";
+                }
+                else
+                {
+                    lowerCons.Text = "False";
                 }
             }
-            if (double.Parse(grid.Rows[e.RowIndex].Cells["ConsumDomesticPerCapita"].Value.ToString()) == lowest)
+        }
+
+        private void persistButton_Click(object sender, EventArgs e)
+        {
+            //saves data to database
+            var connectionString = NpgsqlUtils.OpenConnection();
+            ConsumDAO consumDAO = new ConsumDAO(connectionString);
+            var consums = HelperClass.ReadCsv();
+            foreach (var consum in consums)
             {
-                lowerCons.Text = "True";
+                consumDAO.AddConsum(consum);
             }
-            else
-            {
-                lowerCons.Text = "False";
-            }
+            HelperClass.CreateTable(grid);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

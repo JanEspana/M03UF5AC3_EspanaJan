@@ -1,17 +1,18 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using M03UF5AC3_EspanaJan.DTOs;
 using System.Globalization;
 using System.Xml.Linq;
 namespace M03UF5AC3_EspanaJan
 {
     public class HelperClass
     {
-        public static List<Consum> ReadCsv()
+        public static List<ConsumDTO> ReadCsv()
         {
             //read csv file
             using var reader = new StreamReader(@"../../../Consum_d_aigua_a_Catalunya_per_comarques_20240402.csv");
             using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-            var records = csv.GetRecords<Consum>().ToList();
+            var records = csv.GetRecords<ConsumDTO>().ToList();
             return records;
         }
         public static List<string> ReadXml()
@@ -25,7 +26,7 @@ namespace M03UF5AC3_EspanaJan
         {
             grid.DataSource = ReadCsv();
         }
-        public static void Append(Consum consum)
+        public static void Append(ConsumDTO consum)
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
@@ -34,7 +35,7 @@ namespace M03UF5AC3_EspanaJan
             using var stream = File.Open(@"../../../Consum_d_aigua_a_Catalunya_per_comarques_20240402.csv", FileMode.Append);
             using var writer = new StreamWriter(stream);
             using var csv = new CsvWriter(writer, config);
-            var records = new List<Consum> { consum };
+            var records = new List<ConsumDTO> { consum };
             csv.WriteRecords(records);
         }
     }

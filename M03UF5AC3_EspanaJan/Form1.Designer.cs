@@ -65,6 +65,7 @@
             errorActivitats = new ErrorProvider(components);
             errorConsumCapita = new ErrorProvider(components);
             errorTotal = new ErrorProvider(components);
+            persistButton = new Button();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)grid).BeginInit();
@@ -347,9 +348,9 @@
             // 
             // saveEntry
             // 
-            saveEntry.Location = new Point(539, 213);
+            saveEntry.Location = new Point(539, 183);
             saveEntry.Name = "saveEntry";
-            saveEntry.Size = new Size(147, 41);
+            saveEntry.Size = new Size(147, 39);
             saveEntry.TabIndex = 2;
             saveEntry.Text = "Agrega";
             saveEntry.UseVisualStyleBackColor = true;
@@ -357,9 +358,9 @@
             // 
             // clean
             // 
-            clean.Location = new Point(706, 213);
+            clean.Location = new Point(539, 228);
             clean.Name = "clean";
-            clean.Size = new Size(147, 41);
+            clean.Size = new Size(147, 39);
             clean.TabIndex = 3;
             clean.Text = "Neteja";
             clean.UseVisualStyleBackColor = true;
@@ -402,11 +403,22 @@
             // 
             errorTotal.ContainerControl = this;
             // 
+            // persistButton
+            // 
+            persistButton.Location = new Point(706, 206);
+            persistButton.Name = "persistButton";
+            persistButton.Size = new Size(147, 39);
+            persistButton.TabIndex = 5;
+            persistButton.Text = "Persistir";
+            persistButton.UseVisualStyleBackColor = true;
+            persistButton.Click += persistButton_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(872, 548);
+            Controls.Add(persistButton);
             Controls.Add(grid);
             Controls.Add(clean);
             Controls.Add(saveEntry);
@@ -414,6 +426,7 @@
             Controls.Add(groupBox1);
             Name = "Form1";
             Text = "Form1";
+            Load += Form1_Load;
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
@@ -467,5 +480,6 @@
         private ErrorProvider errorConsumCapita;
         private ErrorProvider errorTotal;
         private TextBox population;
+        private Button persistButton;
     }
 }
